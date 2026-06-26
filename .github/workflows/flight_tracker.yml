@@ -1,0 +1,35 @@
+name: Flight Price Tracker
+
+on:
+  schedule:
+    # Runs every 12 hours (00:00 and 12:00 UTC)
+    - cron: "0 */12 * * *"
+
+  # Allows you to run it manually from the GitHub Actions page
+  workflow_dispatch:
+
+jobs:
+  check-flights:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests google-search-results
+
+      - name: Run Flight Tracker
+        env:
+          SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
+          SHEETY_FLIGHTS: ${{ secrets.SHEETY_FLIGHTS }}
+          FLIGHT_GOOGLE_CREATED_KEY: ${{ secrets.FLIGHT_GOOGLE_CREATED_KEY }}
+          PERSONAL_EMAIL: ${{ secrets.PERSONAL_EMAIL }}
+        run: python main.py
